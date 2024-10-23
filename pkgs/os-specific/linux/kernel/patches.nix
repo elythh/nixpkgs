@@ -39,11 +39,6 @@
       patch = ./request-key-helper-updated.patch;
     };
 
-  modinst_arg_list_too_long =
-    { name = "modinst-arglist-too-long";
-      patch = ./modinst-arg-list-too-long.patch;
-    };
-
   hardened = let
     mkPatch = kernelVersion: { version, sha256, patch }: let src = patch; in {
       name = lib.removeSuffix ".patch" src.name;
@@ -64,5 +59,15 @@
   export-rt-sched-migrate = {
     name = "export-rt-sched-migrate";
     patch = ./export-rt-sched-migrate.patch;
+  };
+
+  # Backport upstream fix for very annoying Tailscale issue
+  # FIXME: remove when merged upstream
+  netfilter-typo-fix = {
+    name = "netfilter-typo-fix";
+    patch = fetchpatch {
+      url = "https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/patch/?id=306ed1728e8438caed30332e1ab46b28c25fe3d8";
+      hash = "sha256-ZGc1xAIjf+MlV02jhIWZ4jHC742+z/WpN7RenqpU7e4=";
+    };
   };
 }

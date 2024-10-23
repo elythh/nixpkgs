@@ -1,36 +1,33 @@
-{ lib
-, fetchFromGitHub
-, rustPlatform
-, stdenv
-, Security
-, SystemConfiguration
-, installShellFiles
-, nix-update-script
+{
+  lib,
+  fetchFromGitHub,
+  rustPlatform,
+  stdenv,
+  Security,
+  SystemConfiguration,
+  installShellFiles,
+  nix-update-script,
 }:
 
 rustPlatform.buildRustPackage rec {
   pname = "rustic";
-  version = "0.7.0";
+  version = "0.9.3";
 
   src = fetchFromGitHub {
     owner = "rustic-rs";
     repo = "rustic";
     rev = "refs/tags/v${version}";
-    hash = "sha256-jUAmboJTzX4oJZy9rFiPRbm94bVpZGa0SaqotoCU/Ss=";
+    hash = "sha256-5Zr3ZxKUT8S8vfHNaCResF+S2UcHrk5pGwJH4riTzIw=";
   };
 
-  cargoHash = "sha256-8YGvxnwD9Vshah2jZ+XxOW0qB4nvWsOyLY1W8k+xQzU=";
-
-  # At the time of writing, upstream defaults to "self-update" and "webdav".
-  # "self-update" is a self-updater, which we don't want in nixpkgs.
-  buildNoDefaultFeatures = true;
-  buildFeatures = [
-    "webdav"
-  ];
+  cargoHash = "sha256-HOpBBXJk8bHjXfRq8UczfMjr3bM91lB62taTlUGUC+M=";
 
   nativeBuildInputs = [ installShellFiles ];
 
-  buildInputs = lib.optionals stdenv.isDarwin [ Security SystemConfiguration ];
+  buildInputs = lib.optionals stdenv.hostPlatform.isDarwin [
+    Security
+    SystemConfiguration
+  ];
 
   postInstall = ''
     for shell in {ba,fi,z}sh; do
@@ -48,7 +45,13 @@ rustPlatform.buildRustPackage rec {
     description = "fast, encrypted, deduplicated backups powered by pure Rust";
     mainProgram = "rustic";
     platforms = lib.platforms.linux ++ lib.platforms.darwin;
-    license = [ lib.licenses.mit lib.licenses.asl20 ];
-    maintainers = [ lib.maintainers.nobbz ];
+    license = [
+      lib.licenses.mit
+      lib.licenses.asl20
+    ];
+    maintainers = [
+      lib.maintainers.nobbz
+      lib.maintainers.pmw
+    ];
   };
 }
